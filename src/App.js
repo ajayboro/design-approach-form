@@ -7,6 +7,9 @@ import {
 	Container,
 	Button,
 	IconButton,
+	Select,
+	MenuItem,
+	Chip,
 } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 
@@ -21,14 +24,15 @@ const initialValues = {
 };
 
 function App() {
+	const weekNames = ["W1", "W2", "W3", "W4", "W5", "W6", "W7"];
+
 	return (
 		<div className="App">
 			<Container maxWidth="md">
 				<Formik
 					initialValues={initialValues}
-					onSubmit={(values, { resetForm }) => {
+					onSubmit={values => {
 						console.log(values);
-						resetForm({ values: "" });
 					}}
 				>
 					{({ values, handleSubmit, handleChange }) => (
@@ -96,7 +100,7 @@ function App() {
 																	paymentBreakdown: [],
 																	resources: [],
 																	weeks: [],
-																	totalPrice: 0,
+																	totalPrice: null,
 																})
 															}
 														>
@@ -143,12 +147,12 @@ function App() {
 																		</Grid>
 																		<Grid item xs={1}>
 																			<IconButton
-																				onClick={() =>
+																				onClick={() => {
 																					push({
 																						subPhaseName: "",
-																						weeks: "",
-																					})
-																				}
+																						weeks: [],
+																					});
+																				}}
 																			>
 																				<AddIcon />
 																			</IconButton>
@@ -177,20 +181,47 @@ function App() {
 																									.subPhaseName
 																							}
 																						/>
-																						<TextField
+
+																						<Select
 																							fullWidth
-																							margin="normal"
-																							type="text"
+																							multiple
 																							id={`phases.${index}.subModules.${subModuleIndex}.weeks`}
 																							name={`phases.${index}.subModules.${subModuleIndex}.weeks`}
-																							variant="outlined"
-																							placeholder="Weeks"
 																							onChange={handleChange}
 																							value={
 																								phase.subModules[subModuleIndex]
 																									.weeks
 																							}
-																						/>
+																							renderValue={selected => (
+																								<div
+																									style={{
+																										display: "flex",
+																										flexWrap: "wrap",
+																									}}
+																								>
+																									{selected.map(
+																										(chip, chipIndex) => (
+																											<Chip
+																												key={chipIndex}
+																												label={chip}
+																												style={{ margin: 2 }}
+																											/>
+																										),
+																									)}
+																								</div>
+																							)}
+																						>
+																							{weekNames.map(
+																								(weekName, weekIndex) => (
+																									<MenuItem
+																										key={weekIndex}
+																										value={weekName}
+																									>
+																										{weekName}
+																									</MenuItem>
+																								),
+																							)}
+																						</Select>
 																					</Grid>
 																				</Grid>
 																			</div>
@@ -212,10 +243,10 @@ function App() {
 																			<IconButton
 																				onClick={() =>
 																					push({
-																						advancePayment: 0,
-																						prdAndPrototye: 0,
-																						developmentCompletion: 0,
-																						qaAndFinalDeployment: 0,
+																						advancePayment: null,
+																						prdAndPrototye: null,
+																						developmentCompletion: null,
+																						qaAndFinalDeployment: null,
 																					})
 																				}
 																			>
@@ -312,9 +343,9 @@ function App() {
 																				onClick={() =>
 																					push({
 																						resourceType: "",
-																						quantity: 0,
+																						quantity: null,
 																						involvement: "",
-																						rate: 0,
+																						rate: null,
 																					})
 																				}
 																			>
