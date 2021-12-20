@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import {
 	Grid,
@@ -23,9 +23,21 @@ const DesignApproachForm = () => {
 		featureLink: "",
 		phases: [],
 	};
-	const weekNames = ["W1", "W2", "W3", "W4", "W5", "W6", "W7"];
-	const classes = useStyles();
 
+	let weekNames = [];
+
+	const [numOfWeeks, setNumOfWeeks] = useState(0);
+
+	const handleChangeWeeks = e => {
+		const value = e.target.value;
+		setNumOfWeeks(value);
+	};
+
+	for (let i = 1; i <= numOfWeeks; i++) {
+		weekNames.push(`W${i}`);
+	}
+
+	const classes = useStyles();
 	return (
 		<Container maxWidth="md">
 			<Formik
@@ -88,7 +100,7 @@ const DesignApproachForm = () => {
 											<Grid container item justifyContent="flex-end">
 												<Grid item xs={1}>
 													<IconButton
-														onClick={() =>
+														onClick={() => {
 															push({
 																phaseName: "",
 																description: "",
@@ -97,8 +109,8 @@ const DesignApproachForm = () => {
 																resources: [],
 																weeks: [],
 																totalPrice: 0,
-															})
-														}
+															});
+														}}
 													>
 														<AddIcon />
 													</IconButton>
@@ -157,6 +169,18 @@ const DesignApproachForm = () => {
 																		</IconButton>
 																	</Grid>
 																</Grid>
+																<Grid item xs={11}>
+																	<TextField
+																		fullWidth
+																		margin="normal"
+																		type="number"
+																		label="Number of weeks"
+																		name="numOfWeeks"
+																		variant="outlined"
+																		value={numOfWeeks}
+																		onChange={handleChangeWeeks}
+																	/>
+																</Grid>
 																{phase.subModules.map(
 																	(module, subModuleIndex) => (
 																		<div key={subModuleIndex}>
@@ -180,6 +204,7 @@ const DesignApproachForm = () => {
 																								.subPhaseName
 																						}
 																					/>
+
 																					<FormControl
 																						margin="normal"
 																						fullWidth
@@ -237,16 +262,17 @@ const DesignApproachForm = () => {
 																								getContentAnchorEl: null,
 																							}}
 																						>
-																							{weekNames.map(
-																								(weekName, weekIndex) => (
-																									<MenuItem
-																										key={weekIndex}
-																										value={weekName}
-																									>
-																										{weekName}
-																									</MenuItem>
-																								),
-																							)}
+																							{weekNames &&
+																								weekNames.map(
+																									(weekName, weekIndex) => (
+																										<MenuItem
+																											key={weekIndex}
+																											value={weekName}
+																										>
+																											{weekName}
+																										</MenuItem>
+																									),
+																								)}
 																						</Select>
 																					</FormControl>
 																				</Grid>
