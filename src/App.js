@@ -1,7 +1,7 @@
 import React from "react";
 import "./App.css";
 
-import DesignApproachForm from "./components/DesignApproachForm/index";
+import DesignApproachForm from "./DesignApproachForm/index";
 
 function App() {
 	return (

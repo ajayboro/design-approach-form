@@ -12,53 +12,12 @@ import {
 	FormControl,
 	InputLabel,
 } from "@material-ui/core";
+
 import AddIcon from "@material-ui/icons/Add";
 import RemoveIcon from "@material-ui/icons/Remove";
 import { Formik, FieldArray } from "formik";
 import { useStyles } from "./styles";
 
-import * as yup from "yup";
-
-const DesignApproachSchema = yup.object({
-	description: yup.string().required("Required"),
-	workflowLink: yup.string().url("Invalid url").required("Required"),
-	featureLink: yup.string().url("Invalid url").required("Required"),
-
-	phases: yup.array().of(
-		yup.object({
-			phaseName: yup.string().required("Required"),
-			description: yup.string().required("Required"),
-			subModules: yup.array().of(
-				yup.object({
-					subPhaseName: yup.string().required("Required"),
-				}),
-			),
-			paymentBreakdown: yup.array().of(
-				yup.object({
-					advancePayment: yup.number().required("Required"),
-					prdAndPrototye: yup.number().required("Required"),
-					developmentCompletion: yup.number().required("Required"),
-					qaAndFinalDeployment: yup.number().required("Required"),
-				}),
-			),
-			resources: yup.array().of(
-				yup.object({
-					resourceType: yup.string().required("Required"),
-					quantity: yup.number().required("Required"),
-					involvement: yup.string().required("Required"),
-					rate: yup.number().required("Required"),
-				}),
-			),
-			weeks: yup.array().of(
-				yup.object({
-					weekNumber: yup.string().required("Required"),
-					resources: yup.string().required("Required"),
-				}),
-			),
-			totalPrice: yup.number().required("Required"),
-		}),
-	),
-});
 const DesignApproachForm = () => {
 	const initialValues = {
 		description: "",
@@ -88,16 +47,8 @@ const DesignApproachForm = () => {
 				onSubmit={values => {
 					console.log(values);
 				}}
-				validationSchema={DesignApproachSchema}
 			>
-				{({
-					values,
-					handleSubmit,
-					handleChange,
-					handleBlur,
-					touched,
-					errors,
-				}) => (
+				{({ values, handleSubmit, handleChange }) => (
 					<form onSubmit={handleSubmit} autoComplete="off">
 						<Grid container justifyContent="center" alignItems="flex-end">
 							<Grid item xs={11}>
@@ -116,9 +67,6 @@ const DesignApproachForm = () => {
 											variant="outlined"
 											onChange={handleChange}
 											value={values.description}
-											onBlur={handleBlur}
-											error={touched.description && Boolean(errors.description)}
-											helperText={touched.description && errors.description}
 										/>
 										<TextField
 											fullWidth
@@ -130,11 +78,6 @@ const DesignApproachForm = () => {
 											variant="outlined"
 											onChange={handleChange}
 											value={values.workflowLink}
-											onBlur={handleBlur}
-											error={
-												touched.workflowLink && Boolean(errors.workflowLink)
-											}
-											helperText={touched.workflowLink && errors.workflowLink}
 										/>
 										<TextField
 											fullWidth
@@ -146,9 +89,6 @@ const DesignApproachForm = () => {
 											variant="outlined"
 											onChange={handleChange}
 											value={values.featureLink}
-											onBlur={handleBlur}
-											error={touched.featureLink && Boolean(errors.featureLink)}
-											helperText={touched.featureLink && errors.featureLink}
 										/>
 										<TextField
 											fullWidth
@@ -164,21 +104,21 @@ const DesignApproachForm = () => {
 									</Grid>
 								</Grid>
 								<FieldArray name="phases">
-									{({ push, remove }) => (
+									{({ push, pop }) => (
 										<>
 											<Grid container item justifyContent="flex-end">
 												<Grid container item xs={2} justifyContent="flex-end">
 													<Grid item>
 														<IconButton
 															onClick={() => {
-																remove({
+																pop({
 																	phaseName: "",
 																	description: "",
 																	subModules: [],
 																	paymentBreakdown: [],
 																	resources: [],
 																	weeks: [],
-																	totalPrice: undefined,
+																	totalPrice: 0,
 																});
 															}}
 														>
@@ -195,7 +135,7 @@ const DesignApproachForm = () => {
 																	paymentBreakdown: [],
 																	resources: [],
 																	weeks: [],
-																	totalPrice: undefined,
+																	totalPrice: 0,
 																});
 															}}
 														>
@@ -221,15 +161,6 @@ const DesignApproachForm = () => {
 																variant="outlined"
 																onChange={handleChange}
 																value={values.phases.phaseName}
-																onBlur={handleBlur}
-																error={
-																	touched?.phases?.[index]?.phaseName &&
-																	Boolean(errors.phases?.[index].phaseName)
-																}
-																helperText={
-																	touched?.phases?.[index]?.phaseName &&
-																	errors.phases?.[index].phaseName
-																}
 															/>
 
 															<TextField
@@ -244,20 +175,11 @@ const DesignApproachForm = () => {
 																variant="outlined"
 																onChange={handleChange}
 																value={values.phases.description}
-																onBlur={handleBlur}
-																error={
-																	touched?.phases?.[index]?.description &&
-																	Boolean(errors.phases?.[index].description)
-																}
-																helperText={
-																	touched?.phases?.[index]?.description &&
-																	errors.phases?.[index].description
-																}
 															/>
 														</Grid>
 													</Grid>
 													<FieldArray name={`phases.${index}.subModules`}>
-														{({ push, remove }) => (
+														{({ push, pop }) => (
 															<>
 																<Grid container item alignItems="flex-end">
 																	<Grid xs={10} item>
@@ -272,7 +194,7 @@ const DesignApproachForm = () => {
 																		<Grid item>
 																			<IconButton
 																				onClick={() => {
-																					remove({
+																					pop({
 																						subPhaseName: "",
 																						weeks: [],
 																					});
@@ -316,25 +238,6 @@ const DesignApproachForm = () => {
 																						onChange={handleChange}
 																						value={
 																							phase.subModules[subModuleIndex]
-																								.subPhaseName
-																						}
-																						onBlur={handleBlur}
-																						error={
-																							touched?.phases?.[index]
-																								.subModules?.[subModuleIndex]
-																								?.subPhaseName &&
-																							Boolean(
-																								errors.phases?.[index]
-																									.subModules?.[subModuleIndex]
-																									.subPhaseName,
-																							)
-																						}
-																						helperText={
-																							touched?.phases?.[index]
-																								.subModules?.[subModuleIndex]
-																								?.subPhaseName &&
-																							errors.phases?.[index]
-																								.subModules?.[subModuleIndex]
 																								.subPhaseName
 																						}
 																					/>
@@ -418,7 +321,7 @@ const DesignApproachForm = () => {
 														)}
 													</FieldArray>
 													<FieldArray name={`phases.${index}.paymentBreakdown`}>
-														{({ push, remove }) => (
+														{({ push, pop }) => (
 															<>
 																<Grid container item alignItems="flex-end">
 																	<Grid xs={10} item>
@@ -433,11 +336,11 @@ const DesignApproachForm = () => {
 																		<Grid item>
 																			<IconButton
 																				onClick={() =>
-																					remove({
-																						advancePayment: undefined,
-																						prdAndPrototye: undefined,
-																						developmentCompletion: undefined,
-																						qaAndFinalDeployment: undefined,
+																					pop({
+																						advancePayment: 0,
+																						prdAndPrototye: 0,
+																						developmentCompletion: 0,
+																						qaAndFinalDeployment: 0,
 																					})
 																				}
 																			>
@@ -448,10 +351,10 @@ const DesignApproachForm = () => {
 																			<IconButton
 																				onClick={() =>
 																					push({
-																						advancePayment: undefined,
-																						prdAndPrototye: undefined,
-																						developmentCompletion: undefined,
-																						qaAndFinalDeployment: undefined,
+																						advancePayment: 0,
+																						prdAndPrototye: 0,
+																						developmentCompletion: 0,
+																						qaAndFinalDeployment: 0,
 																					})
 																				}
 																			>
@@ -483,29 +386,6 @@ const DesignApproachForm = () => {
 																								paymentIndex
 																							].advancePayment
 																						}
-																						onBlur={handleBlur}
-																						error={
-																							touched?.phases?.[index]
-																								.paymentBreakdown?.[
-																								paymentIndex
-																							]?.advancePayment &&
-																							Boolean(
-																								errors.phases?.[index]
-																									.paymentBreakdown?.[
-																									paymentIndex
-																								].advancePayment,
-																							)
-																						}
-																						helperText={
-																							touched?.phases?.[index]
-																								.paymentBreakdown?.[
-																								paymentIndex
-																							]?.advancePayment &&
-																							errors.phases?.[index]
-																								.paymentBreakdown?.[
-																								paymentIndex
-																							].advancePayment
-																						}
 																						InputProps={{
 																							inputProps: { min: 0 },
 																						}}
@@ -522,29 +402,6 @@ const DesignApproachForm = () => {
 																						onChange={handleChange}
 																						value={
 																							phase.paymentBreakdown[
-																								paymentIndex
-																							].prdAndPrototye
-																						}
-																						onBlur={handleBlur}
-																						error={
-																							touched?.phases?.[index]
-																								.paymentBreakdown?.[
-																								paymentIndex
-																							]?.prdAndPrototye &&
-																							Boolean(
-																								errors.phases?.[index]
-																									.paymentBreakdown?.[
-																									paymentIndex
-																								].prdAndPrototye,
-																							)
-																						}
-																						helperText={
-																							touched?.phases?.[index]
-																								.paymentBreakdown?.[
-																								paymentIndex
-																							]?.prdAndPrototye &&
-																							errors.phases?.[index]
-																								.paymentBreakdown?.[
 																								paymentIndex
 																							].prdAndPrototye
 																						}
@@ -566,29 +423,6 @@ const DesignApproachForm = () => {
 																								paymentIndex
 																							].developmentCompletion
 																						}
-																						onBlur={handleBlur}
-																						error={
-																							touched?.phases?.[index]
-																								.paymentBreakdown?.[
-																								paymentIndex
-																							]?.developmentCompletion &&
-																							Boolean(
-																								errors.phases?.[index]
-																									.paymentBreakdown?.[
-																									paymentIndex
-																								].developmentCompletion,
-																							)
-																						}
-																						helperText={
-																							touched?.phases?.[index]
-																								.paymentBreakdown?.[
-																								paymentIndex
-																							]?.developmentCompletion &&
-																							errors.phases?.[index]
-																								.paymentBreakdown?.[
-																								paymentIndex
-																							].developmentCompletion
-																						}
 																						InputProps={{
 																							inputProps: { min: 0 },
 																						}}
@@ -607,29 +441,6 @@ const DesignApproachForm = () => {
 																								paymentIndex
 																							].qaAndFinalDeployment
 																						}
-																						onBlur={handleBlur}
-																						error={
-																							touched?.phases?.[index]
-																								.paymentBreakdown?.[
-																								paymentIndex
-																							]?.qaAndFinalDeployment &&
-																							Boolean(
-																								errors.phases?.[index]
-																									.paymentBreakdown?.[
-																									paymentIndex
-																								].qaAndFinalDeployment,
-																							)
-																						}
-																						helperText={
-																							touched?.phases?.[index]
-																								.paymentBreakdown?.[
-																								paymentIndex
-																							]?.qaAndFinalDeployment &&
-																							errors.phases?.[index]
-																								.paymentBreakdown?.[
-																								paymentIndex
-																							].qaAndFinalDeployment
-																						}
 																						InputProps={{
 																							inputProps: { min: 0 },
 																						}}
@@ -643,7 +454,7 @@ const DesignApproachForm = () => {
 														)}
 													</FieldArray>
 													<FieldArray name={`phases.${index}.resources`}>
-														{({ push, remove }) => (
+														{({ push, pop }) => (
 															<>
 																<Grid container item alignItems="flex-end">
 																	<Grid xs={10} item>
@@ -658,11 +469,11 @@ const DesignApproachForm = () => {
 																		<Grid item>
 																			<IconButton
 																				onClick={() =>
-																					remove({
+																					pop({
 																						resourceType: "",
-																						quantity: undefined,
+																						quantity: 0,
 																						involvement: "",
-																						rate: undefined,
+																						rate: 0,
 																					})
 																				}
 																			>
@@ -674,9 +485,9 @@ const DesignApproachForm = () => {
 																				onClick={() =>
 																					push({
 																						resourceType: "",
-																						quantity: undefined,
+																						quantity: 0,
 																						involvement: "",
-																						rate: undefined,
+																						rate: 0,
 																					})
 																				}
 																			>
@@ -707,25 +518,6 @@ const DesignApproachForm = () => {
 																							phase.resources[resourceIndex]
 																								.resourceType
 																						}
-																						onBlur={handleBlur}
-																						error={
-																							touched?.phases?.[index]
-																								.resources?.[resourceIndex]
-																								?.resourceType &&
-																							Boolean(
-																								errors.phases?.[index]
-																									.resources?.[resourceIndex]
-																									.resourceType,
-																							)
-																						}
-																						helperText={
-																							touched?.phases?.[index]
-																								.resources?.[resourceIndex]
-																								?.resourceType &&
-																							errors.phases?.[index]
-																								.resources?.[resourceIndex]
-																								.resourceType
-																						}
 																					/>
 
 																					<TextField
@@ -739,25 +531,6 @@ const DesignApproachForm = () => {
 																						onChange={handleChange}
 																						value={
 																							phase.resources[resourceIndex]
-																								.quantity
-																						}
-																						onBlur={handleBlur}
-																						error={
-																							touched?.phases?.[index]
-																								.resources?.[resourceIndex]
-																								?.quantity &&
-																							Boolean(
-																								errors.phases?.[index]
-																									.resources?.[resourceIndex]
-																									.quantity,
-																							)
-																						}
-																						helperText={
-																							touched?.phases?.[index]
-																								.resources?.[resourceIndex]
-																								?.quantity &&
-																							errors.phases?.[index]
-																								.resources?.[resourceIndex]
 																								.quantity
 																						}
 																						InputProps={{
@@ -777,25 +550,6 @@ const DesignApproachForm = () => {
 																							phase.resources[resourceIndex]
 																								.involvement
 																						}
-																						onBlur={handleBlur}
-																						error={
-																							touched?.phases?.[index]
-																								.resources?.[resourceIndex]
-																								?.involvement &&
-																							Boolean(
-																								errors.phases?.[index]
-																									.resources?.[resourceIndex]
-																									.involvement,
-																							)
-																						}
-																						helperText={
-																							touched?.phases?.[index]
-																								.resources?.[resourceIndex]
-																								?.involvement &&
-																							errors.phases?.[index]
-																								.resources?.[resourceIndex]
-																								.involvement
-																						}
 																					/>
 																					<TextField
 																						fullWidth
@@ -810,24 +564,6 @@ const DesignApproachForm = () => {
 																							phase.resources[resourceIndex]
 																								.rate
 																						}
-																						onBlur={handleBlur}
-																						error={
-																							touched?.phases?.[index]
-																								.resources?.[resourceIndex]
-																								?.rate &&
-																							Boolean(
-																								errors.phases?.[index]
-																									.resources?.[resourceIndex]
-																									.rate,
-																							)
-																						}
-																						helperText={
-																							touched?.phases?.[index]
-																								.resources?.[resourceIndex]
-																								?.rate &&
-																							errors.phases?.[index]
-																								.resources?.[resourceIndex].rate
-																						}
 																						InputProps={{
 																							inputProps: { min: 0 },
 																						}}
@@ -841,7 +577,7 @@ const DesignApproachForm = () => {
 														)}
 													</FieldArray>
 													<FieldArray name={`phases.${index}.weeks`}>
-														{({ push, remove }) => (
+														{({ push, pop }) => (
 															<>
 																<Grid container item alignItems="flex-end">
 																	<Grid xs={10} item>
@@ -856,7 +592,7 @@ const DesignApproachForm = () => {
 																		<Grid item>
 																			<IconButton
 																				onClick={() =>
-																					remove({
+																					pop({
 																						weekNumber: "",
 																						resources: "",
 																					})
@@ -895,25 +631,6 @@ const DesignApproachForm = () => {
 																					value={
 																						phase.weeks[weekIndex].weekNumber
 																					}
-																					onBlur={handleBlur}
-																					error={
-																						touched?.phases?.[index].weeks?.[
-																							weekIndex
-																						]?.weekNumber &&
-																						Boolean(
-																							errors.phases?.[index].weeks?.[
-																								weekIndex
-																							].weekNumber,
-																						)
-																					}
-																					helperText={
-																						touched?.phases?.[index].weeks?.[
-																							weekIndex
-																						]?.weekNumber &&
-																						errors.phases?.[index].weeks?.[
-																							weekIndex
-																						].weekNumber
-																					}
 																				/>
 																				<TextField
 																					fullWidth
@@ -924,25 +641,8 @@ const DesignApproachForm = () => {
 																					label="Resources"
 																					variant="outlined"
 																					onChange={handleChange}
-																					value={phase.weeks[index].resources}
-																					onBlur={handleBlur}
-																					error={
-																						touched?.phases?.[index].weeks?.[
-																							weekIndex
-																						]?.resources &&
-																						Boolean(
-																							errors.phases?.[index].weeks?.[
-																								weekIndex
-																							].resources,
-																						)
-																					}
-																					helperText={
-																						touched?.phases?.[index].weeks?.[
-																							weekIndex
-																						]?.resources &&
-																						errors.phases?.[index].weeks?.[
-																							weekIndex
-																						].resources
+																					value={
+																						phase.weeks[weekIndex].resources
 																					}
 																				/>
 																			</Grid>
@@ -963,15 +663,6 @@ const DesignApproachForm = () => {
 															variant="outlined"
 															onChange={handleChange}
 															value={values.phases.totalPrice}
-															onBlur={handleBlur}
-															error={
-																touched?.phases?.[index]?.totalPrice &&
-																Boolean(errors.phases?.[index].totalPrice)
-															}
-															helperText={
-																touched?.phases?.[index]?.totalPrice &&
-																errors.phases?.[index].totalPrice
-															}
 															InputProps={{ inputProps: { min: 0 } }}
 														/>
 													</Grid>
