@@ -17,7 +17,7 @@ const Weeks = React.memo(({ index, phase, handleChange }) => {
 			{({ push, pop }) => (
 				<React.Fragment>
 					<Grid container item alignItems="flex-end">
-						<Grid xs={10} item>
+						<Grid xs={12} item>
 							<h4>Weeks</h4>
 						</Grid>
 					</Grid>

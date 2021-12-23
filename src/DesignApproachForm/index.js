@@ -120,7 +120,7 @@ const DesignApproachForm = React.memo(() => {
 											{values.phases.length > 0 &&
 												values.phases.map((phase, index) => (
 													<React.Fragment key={index}>
-														<Grid xs={10} item>
+														<Grid xs={12} item>
 															<h2>Phases {index + 1}</h2>
 														</Grid>
 														<Grid container item alignItems="flex-end">
@@ -211,8 +211,8 @@ const DesignApproachForm = React.memo(() => {
 									)}
 								</FieldArray>
 							</Grid>
-							<Grid container justifyContent="flex-start">
-								<Grid item xs={10}>
+							<Grid container justifyContent="center">
+								<Grid item xs={12}>
 									<Button
 										type="submit"
 										color="primary"

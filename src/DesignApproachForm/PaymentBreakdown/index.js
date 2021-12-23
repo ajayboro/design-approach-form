@@ -19,7 +19,7 @@ const PaymentBreakdown = React.memo(({ index, phase, handleChange }) => {
 			{({ push, pop }) => (
 				<React.Fragment>
 					<Grid container item alignItems="flex-end">
-						<Grid xs={10} item>
+						<Grid xs={12} item>
 							<h4>Payment breakdown</h4>
 						</Grid>
 					</Grid>
