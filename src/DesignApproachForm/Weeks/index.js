@@ -7,10 +7,12 @@ import DeleteIcon from "@material-ui/icons/Delete";
 
 import { FieldArray } from "formik";
 
-const Weeks = React.memo(({ index, phase, handleChange }) => {
+import Resources from "../Weeks/Resources/index";
+
+const Weeks = React.memo(({ index, phase, handleChange, proposalData }) => {
 	const weeks = {
 		weekNumber: "",
-		resources: "",
+		resources: [],
 	};
 	return (
 		<FieldArray name={`phases.${index}.weeks`}>
@@ -37,16 +39,12 @@ const Weeks = React.memo(({ index, phase, handleChange }) => {
 											onChange={handleChange}
 											value={phase.weeks[weekIndex].weekNumber}
 										/>
-										<TextField
-											fullWidth
-											margin="normal"
-											type="text"
-											id={`phases.${index}.weeks.${weekIndex}.resources`}
-											name={`phases.${index}.weeks.${weekIndex}.resources`}
-											label="Resources"
-											variant="outlined"
-											onChange={handleChange}
-											value={phase.weeks[weekIndex].resources}
+										<Resources
+											index={index}
+											week={week}
+											weekIndex={weekIndex}
+											handleChange={handleChange}
+											proposalData={proposalData}
 										/>
 									</Grid>
 								</Grid>
@@ -55,7 +53,7 @@ const Weeks = React.memo(({ index, phase, handleChange }) => {
 					<Grid container item xs={12} justifyContent="flex-end">
 						<Grid item>
 							{phase.weeks.length > 0 && (
-								<Tooltip title="Delete">
+								<Tooltip title="Delete Weeks">
 									<IconButton onClick={() => pop()}>
 										<DeleteIcon />
 									</IconButton>
@@ -63,7 +61,7 @@ const Weeks = React.memo(({ index, phase, handleChange }) => {
 							)}
 						</Grid>
 						<Grid item>
-							<Tooltip title="Add">
+							<Tooltip title="Add Weeks">
 								<IconButton onClick={() => push(weeks)}>
 									<AddIcon />
 								</IconButton>

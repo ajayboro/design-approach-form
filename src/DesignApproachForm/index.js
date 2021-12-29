@@ -15,15 +15,17 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import { Formik, FieldArray } from "formik";
 
 import SubModules from "./SubModules/index";
-import PaymentBreakdown from "./PaymentBreakdown/index";
 import Resources from "./Resources/index";
 import Weeks from "./Weeks/index";
+import { useRecoilState } from "recoil";
+import { proposalSchemaState } from "../recoil/atom";
 
 const DesignApproachForm = React.memo(() => {
+	const [proposalData, setProposalData] = useRecoilState(proposalSchemaState);
 	const initialValues = {
-		description: "",
-		workflowLink: "",
-		featureLink: "",
+		description: proposalData.design_approach.description,
+		workflowLink: proposalData.design_approach.workflow_link,
+		featureLink: proposalData.design_approach.feature_link,
 		phases: [],
 	};
 
@@ -31,7 +33,12 @@ const DesignApproachForm = React.memo(() => {
 		phaseName: "",
 		description: "",
 		subModules: [],
-		paymentBreakdown: [],
+		paymentBreakdown: {
+			advancePayment: 0,
+			prdAndPrototye: 0,
+			developmentCompletion: 0,
+			qaAndFinalDeployment: 0,
+		},
 		resources: [],
 		weeks: [],
 		totalPrice: 0,
@@ -134,7 +141,7 @@ const DesignApproachForm = React.memo(() => {
 																	label="Phase name"
 																	variant="outlined"
 																	onChange={handleChange}
-																	value={values.phases.phaseName}
+																	value={values.phases[index].phaseName}
 																/>
 
 																<TextField
@@ -148,27 +155,103 @@ const DesignApproachForm = React.memo(() => {
 																	label="Description"
 																	variant="outlined"
 																	onChange={handleChange}
-																	value={values.phases.description}
+																	value={values.phases[index].description}
 																/>
 															</Grid>
 														</Grid>
 														<SubModules
+															proposalData={proposalData}
 															index={index}
 															phase={phase}
 															weekNames={weekNames}
 															handleChange={handleChange}
 														/>
-														<PaymentBreakdown
-															index={index}
-															phase={phase}
-															handleChange={handleChange}
-														/>
+
+														<React.Fragment>
+															<Grid container item alignItems="flex-end">
+																<Grid xs={12} item>
+																	<h4>Payment breakdown</h4>
+																</Grid>
+															</Grid>
+															<Grid container item alignItems="flex-end">
+																<Grid xs={12} item>
+																	<TextField
+																		fullWidth
+																		margin="normal"
+																		type="number"
+																		id={`phases.${index}.paymentBreakdown.advancePayment`}
+																		name={`phases.${index}.paymentBreakdown.advancePayment`}
+																		label="Advance Payment"
+																		variant="outlined"
+																		onChange={handleChange}
+																		value={
+																			phase.paymentBreakdown.advancePayment
+																		}
+																		InputProps={{
+																			inputProps: { min: 0 },
+																		}}
+																	/>
+																	<TextField
+																		fullWidth
+																		margin="normal"
+																		type="number"
+																		id={`phases.${index}.paymentBreakdown.prdAndPrototye`}
+																		name={`phases.${index}.paymentBreakdown.prdAndPrototye`}
+																		label=" PRD and prototype"
+																		variant="outlined"
+																		onChange={handleChange}
+																		value={
+																			phase.paymentBreakdown.prdAndPrototye
+																		}
+																		InputProps={{
+																			inputProps: { min: 0 },
+																		}}
+																	/>
+																	<TextField
+																		fullWidth
+																		margin="normal"
+																		type="number"
+																		id={`phases.${index}.paymentBreakdown.developmentCompletion`}
+																		name={`phases.${index}.paymentBreakdown.developmentCompletion`}
+																		label="Development completion"
+																		variant="outlined"
+																		onChange={handleChange}
+																		value={
+																			phase.paymentBreakdown
+																				.developmentCompletion
+																		}
+																		InputProps={{
+																			inputProps: { min: 0 },
+																		}}
+																	/>
+																	<TextField
+																		fullWidth
+																		margin="normal"
+																		type="number"
+																		id={`phases.${index}.paymentBreakdown.qaAndFinalDeployment`}
+																		name={`phases.${index}.paymentBreakdown.qaAndFinalDeployment`}
+																		label="QA and final deployment"
+																		variant="outlined"
+																		onChange={handleChange}
+																		value={
+																			phase.paymentBreakdown
+																				.qaAndFinalDeployment
+																		}
+																		InputProps={{
+																			inputProps: { min: 0 },
+																		}}
+																	/>
+																</Grid>
+															</Grid>
+														</React.Fragment>
 														<Resources
+															proposalData={proposalData}
 															index={index}
 															phase={phase}
 															handleChange={handleChange}
 														/>
 														<Weeks
+															proposalData={proposalData}
 															index={index}
 															phase={phase}
 															handleChange={handleChange}
@@ -183,7 +266,7 @@ const DesignApproachForm = React.memo(() => {
 																label="Total price"
 																variant="outlined"
 																onChange={handleChange}
-																value={values.phases.totalPrice}
+																value={values.phases[index].totalPrice}
 																InputProps={{ inputProps: { min: 0 } }}
 															/>
 														</Grid>
@@ -192,7 +275,7 @@ const DesignApproachForm = React.memo(() => {
 											<Grid container item xs={12} justifyContent="flex-end">
 												<Grid item>
 													{values.phases.length > 0 && (
-														<Tooltip title="Delete">
+														<Tooltip title="Delete Phases">
 															<IconButton onClick={() => pop()}>
 																<DeleteIcon />
 															</IconButton>
@@ -200,7 +283,7 @@ const DesignApproachForm = React.memo(() => {
 													)}
 												</Grid>
 												<Grid item>
-													<Tooltip title="Add">
+													<Tooltip title="Add Phases">
 														<IconButton onClick={() => push(phases)}>
 															<AddIcon />
 														</IconButton>

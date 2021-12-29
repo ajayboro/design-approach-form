@@ -6,7 +6,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 
 import { FieldArray } from "formik";
 
-const Resources = React.memo(({ index, phase, handleChange }) => {
+const Resources = React.memo(({ index, phase, handleChange, proposalData }) => {
 	const resources = {
 		resourceType: "",
 		quantity: 0,
@@ -85,7 +85,7 @@ const Resources = React.memo(({ index, phase, handleChange }) => {
 					<Grid container item xs={12} justifyContent="flex-end">
 						<Grid item>
 							{phase.resources.length > 0 && (
-								<Tooltip title="Delete">
+								<Tooltip title="Delete Resources">
 									<IconButton onClick={() => pop()}>
 										<DeleteIcon />
 									</IconButton>
@@ -93,7 +93,7 @@ const Resources = React.memo(({ index, phase, handleChange }) => {
 							)}
 						</Grid>
 						<Grid item>
-							<Tooltip title="Add">
+							<Tooltip title="Add Resources">
 								<IconButton onClick={() => push(resources)}>
 									<AddIcon />
 								</IconButton>
